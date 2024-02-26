@@ -1,5 +1,16 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Todo } from '../../shared/interfaces/todo';
 
 @Component({
@@ -27,10 +38,17 @@ export class UpdateTodoFormComponent {
   @Input({ required: true }) todo!: Todo;
   @Output() todoUpdated = new EventEmitter<Todo>();
   private fb = new FormBuilder();
+  updateTodoForm!: FormGroup;
 
-  updateTodoForm = this.fb.nonNullable.group({
-    id: [this.todo.id],
-    title: [this.todo.title, Validators.required],
-    description: [this.todo.description || ''],
-  });
+  ngOnChanges(changes: SimpleChanges) {
+    if ('todo' in changes) {
+      const todo = changes['todo'].currentValue as Todo;
+
+      this.updateTodoForm = this.fb.nonNullable.group({
+        id: [todo.id],
+        title: [todo.title, Validators.required],
+        description: [todo.description || ''],
+      });
+    }
+  }
 }

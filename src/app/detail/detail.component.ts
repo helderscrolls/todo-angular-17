@@ -1,8 +1,9 @@
-import { JsonPipe, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { TodoService } from '../shared/data-access/todo.service';
+import { Todo } from '../shared/interfaces/todo';
 import { UpdateTodoFormComponent } from './ui/update-todo-form.component';
 
 @Component({
@@ -11,13 +12,16 @@ import { UpdateTodoFormComponent } from './ui/update-todo-form.component';
   template: `
     @if (todo(); as todo) {
     <button class="green" (click)="updateShowDetailForm()">Edit todo</button>
+    <ng-container *ngIf="showDetailForm">
+      <app-update-todo-form
+        [todo]="todo"
+        (todoUpdated)="updateTodo($event)"
+      ></app-update-todo-form>
+    </ng-container>
+
     <h2>{{ todo.title }}</h2>
     <p>{{ todo.description }}</p>
 
-    {{ todo | json }}
-    <ng-container *ngIf="showDetailForm">
-      <app-update-todo-form [todo]="todo"></app-update-todo-form>
-    </ng-container>
     } @else {
     <p>Could not find todo...</p>
     }
@@ -29,7 +33,7 @@ import { UpdateTodoFormComponent } from './ui/update-todo-form.component';
       }
     `,
   ],
-  imports: [NgIf, UpdateTodoFormComponent, JsonPipe],
+  imports: [NgIf, UpdateTodoFormComponent],
 })
 export default class DetailComponent {
   private route = inject(ActivatedRoute);
@@ -46,5 +50,10 @@ export default class DetailComponent {
 
   updateShowDetailForm(): void {
     this.showDetailForm = !this.showDetailForm;
+  }
+
+  updateTodo(todo: Todo): void {
+    this.todoService.updateTodo(todo);
+    this.updateShowDetailForm();
   }
 }

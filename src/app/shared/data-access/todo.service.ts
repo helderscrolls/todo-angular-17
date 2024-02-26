@@ -24,7 +24,6 @@ export class TodoService {
   }
 
   updateTodo(updatedTodo: Todo) {
-    console.log('updatedTodo', updatedTodo);
     this.#todos.update((todos) =>
       todos.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
     );
