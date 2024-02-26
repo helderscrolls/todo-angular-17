@@ -11,11 +11,13 @@ import { UpdateTodoFormComponent } from './ui/update-todo-form.component';
   selector: 'app-detail',
   template: `
     @if (todo(); as todo) {
-    <button class="green" (click)="updateShowDetailForm()">Edit todo</button>
+    <button class="green" (click)="toggleUpdateTodoFormVisibility()">
+      Edit todo
+    </button>
     <ng-container *ngIf="showDetailForm">
       <app-update-todo-form
         [todo]="todo"
-        (todoUpdated)="updateTodo($event)"
+        (todoUpdated)="submitUpdateTodoForm($event)"
       ></app-update-todo-form>
     </ng-container>
 
@@ -48,12 +50,12 @@ export default class DetailComponent {
       .find((todo) => todo.id === this.paramMap()?.get('id'))
   );
 
-  updateShowDetailForm(): void {
+  toggleUpdateTodoFormVisibility(): void {
     this.showDetailForm = !this.showDetailForm;
   }
 
-  updateTodo(todo: Todo): void {
+  submitUpdateTodoForm(todo: Todo): void {
     this.todoService.updateTodo(todo);
-    this.updateShowDetailForm();
+    this.toggleUpdateTodoFormVisibility();
   }
 }
